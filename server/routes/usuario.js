@@ -1,13 +1,32 @@
-const bodyParser = require('body-parser');
 const express = require('express');
-const Usuario = require('../models/usuario.js');
+const _ = require('underscore');
+const usuario = require('../models/usuario');
+const Usuario = require('../models/usuario');
 const app = express();
 
 app.get('/usuario', function(req, res) {
-    res.json({
-        ok: '200',
-        mensaje: 'Usuarios consultados con exito'
-    });
+    let desde = req.query.desde || 0;
+    let hasta = req.query.hasta || 5;
+
+    Usuario.find({ estado: true })
+        .skip(Number(desde))
+        .limit(Number(hasta))
+        .exec((err, usuarios) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'Ocurrio un error al momento de consultar',
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                msg: 'Lista de usuarios obtenida con exito',
+                conteo: usuarios.length,
+                usuarios
+            });
+        });
 });
 
 app.post('/usuario', function(req, res) {
@@ -15,7 +34,7 @@ app.post('/usuario', function(req, res) {
     let usr = new Usuario({
         nombre: body.nombre,
         email: body.email,
-        password: body.password,
+        password: body.password
     });
 
     usr.save((err, usrDB) => {
@@ -26,7 +45,6 @@ app.post('/usuario', function(req, res) {
                 err
             });
         }
-
         res.json({
             ok: true,
             msg: 'Usuario insertado con exito',
@@ -35,19 +53,28 @@ app.post('/usuario', function(req, res) {
     });
 });
 
-app.put('/usuario/:id/:nombre', function(req, res) {
+app.put('/usuario/:id', function(req, res) {
     let id = req.params.id;
-    let nombre = req.params.nombre;
+    let body = _.pick(req.body, ['nombre', 'email']);
 
-    res.json({
-        ok: 200,
-        mensje: 'Usuario actualizado con exito',
-        id: id,
-        nombre: nombre
-    });
+    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
+        (err, usrDB) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'Ocurrio un error al momento de actualizar',
+                    err
+                });
+            }
+            res.json({
+                ok: true,
+                msg: 'Usuario actualizado con exito',
+                usuario: usrDB
+            });
+        });
 });
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', function(req, rest) {
     let id = req.params.id;
 
     res.json({
