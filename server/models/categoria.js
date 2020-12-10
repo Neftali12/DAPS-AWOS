@@ -2,20 +2,19 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let categoriaSchema = new Schema({
-    id: {
+    _id: {
         type: String,
-        unique: true,
-        required: [true, 'Id necesario']
+        required: [true, 'El id es necesario']
+       
     },
     descripcion: {
         type: String,
         unique: true,
-        required: [true, 'La descripcion es obligatoria']
+        required: [true, 'La descripcion es obligatoria para su insercion correcta']
     },
     usuario: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.String,
         ref: 'Usuario'
     }
 });
-
-module.exports = mongoose.model('Categoria', categoriaSchema);
+module.exports = mongoose.model('Categoria', categoriaSchema)

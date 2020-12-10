@@ -8,35 +8,58 @@ app.get('/categoria', (req, res) => {
     let hasta = req.query.hasta || 100;
 
     Categoria.find({})
-        .skip(Number(desde))
-        .limit(Number(hasta))
-        .populate('usuario', 'nombre email')
-        .exec((err, categorias) => {
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    msg: 'Ocurrio un error al listar las categorias',
-                    err
-                });
-            }
-
-            res.json({
-                ok: true,
-                msg: 'Categorias listadas con exito',
-                conteo: categorias.length,
-                categorias
+    .skip(Number(desde))
+    .limit(Number(hasta))
+    .populate('usuario','nombre email')
+    .exec((err, categorias) => {
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Ocurrio un error al listar las categorias',
+                err
             });
+        }
+
+        res.json({
+            ok: true,
+            msg: 'Categorias listadas con exito',
+            conteo: categorias.length,
+            categorias
         });
+    });
 });
 
-app.post('/categoria', (req, res) => {
+app.get('/categoria/:id', (req, res) => {
+   
+    let idcat = req.params.id;
+    Categoria.findById({_id: idcat})
+    .populate('usuario','nombre email')
+    .exec((err, categorias) => {
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Ocurrio un error al listar las categorias',
+                err
+            });
+        }
+
+        res.json({
+            ok: true,
+            msg: 'Categorias listadas con exito',
+            categorias
+        });
+    });
+});
+
+app.post('/categoria', (req, res) =>{
     let cat = new Categoria({
         descripcion: req.body.descripcion,
-        usuario: req.body.usuario
+        usuario: req.body.usuario,
+        _id: req.body._id
     });
 
     cat.save((err, catDB) => {
-        if (err) {
+        if(err) {
             return res.status(400).json({
                 ok: false,
                 msg: 'Error al insertar una categoria',
@@ -52,45 +75,47 @@ app.post('/categoria', (req, res) => {
     });
 });
 
-app.put('/categoria/:id', (req, res) => {
-    let id = req.params.id;
-    let body = _.pick(req.body, ['descripcion', 'usuario']);
+app.put('/categoria/:id', function (req, res) {
+    let id = req.params.id
+    let body = _.pick(req.body,['descripcion','usuario']);
 
-    Categoria.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, catDB) => {
-        if (err) {
+    Categoria.findByIdAndUpdate(id, body, { new:true, runValidators: true, context: 'query' }, (err, catDB) =>{
+        if(err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Ocurrio un error al momento de actualizar',
+                msg: 'Ocurrio un error al actualizar',
                 err
             });
         }
 
         res.json({
-            ok: true,
-            msg: 'La categoria fue actualizada con exito',
-            catDB
+            ok:true,
+            msg: 'Categoria actualizado con exito',
+            categorias: catDB
         });
     });
-});
+  });
 
-app.delete('/categoria/:id', (req, res) => {
+  app.delete('/categoria/:id', function (req, res) {
     let id = req.params.id;
 
-    Categoria.findByIdAndRemove(id, { context: 'query' }, (err, catDB) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'Ocurrio un error al momento de eliminar',
-                err
-            });
-        }
+     Categoria.deleteOne({ _id: id }, (err, categoriaBorrada) =>{
+       if(err) {
+           return res.status(400).json({
+               ok: false,
+               msg: 'Ocurrio un error al intentar de eliminar la categoria',
+               err
+           });
+       }
 
-        res.json({
-            ok: true,
-            msg: 'La categoria fue eliminada con exito',
-            catDB
-        });
+       res.json({
+           ok: true,
+           msg: 'Ucategoria eliminado con exito',
+           categoriaBorrada
+       });
     });
 });
+
+    
 
 module.exports = app;

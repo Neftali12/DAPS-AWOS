@@ -1,12 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require ('mongoose');
 
 let Schema = mongoose.Schema;
 
 let usuarioSchema = new Schema({
-    id: {
+    _id: {
         type: String,
-        unique: true,
-        required: [true, 'Id necesario']
+        required: [true, 'El id es necesario']   
     },
     nombre: {
         type: String,
@@ -14,17 +13,16 @@ let usuarioSchema = new Schema({
     },
     apellidos: {
         type: String,
-        require: [true, 'El apellido es necesario']
+        required: [true, 'El nombre es necesario']
     },
-    email: {
+    email:{
         type: String,
         required: [true, 'El correo es necesario'],
         unique: true
     },
     password: {
         type: String,
-        required: [true, 'La contraseña es necesaria'],
-
+        required: [true, 'La contraseña es necesaria']
     },
     img: {
         type: String,
