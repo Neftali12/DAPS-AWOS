@@ -3,9 +3,18 @@ const mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let usuarioSchema = new Schema({
+    id: {
+        type: String,
+        unique: true,
+        required: [true, 'Id necesario']
+    },
     nombre: {
         type: String,
         required: [true, 'El nombre es necesario']
+    },
+    apellidos: {
+        type: String,
+        require: [true, 'El apellido es necesario']
     },
     email: {
         type: String,

@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let categoriaSchema = new Schema({
+    id: {
+        type: String,
+        unique: true,
+        required: [true, 'Id necesario']
+    },
     descripcion: {
         type: String,
         unique: true,

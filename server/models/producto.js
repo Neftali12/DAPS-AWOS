@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let productoSchema = new Schema({
+    id: {
+        type: String,
+        unique: true,
+        required: [true, 'Id necesario']
+    },
     nombre: {
         type: String,
         unique: true,
