@@ -6,7 +6,7 @@ const Producto = require('../models/producto');
 
 app.get('/producto', (req, res) => {
     let desde = req.query.desde || 0;
-    let hasta = req.query.hasta || 5;
+    let hasta = req.query.hasta || 100;
 
     Producto.find({})
         .skip(Number(desde))
